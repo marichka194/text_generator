@@ -6,7 +6,6 @@ import random
 
 from core.stats import StatisticsStorage, Node, read
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--src", required=True, help="Stats dump file")
