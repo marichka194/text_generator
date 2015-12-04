@@ -6,16 +6,15 @@ import random
 
 from core.stats import StatisticsStorage, Node, read
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--src", required=True, help="Stats dump file")
-    parser.add_argument("-d", "--dst", required=True, help="Output file for generated text")
-    args = parser.parse_args()
 
-    logging.basicConfig(format='%(asctime)s:%(message)s', level=logging.DEBUG)
+def read_dump():
     logging.info("load stats")
     storage = read(args.src)
     logging.info("stats loaded")
+    return storage
+
+
+def generate(storage):
     logging.info("init system")
     w1 = storage.get("_", "_")
     w2 = storage.get("_", "_")
@@ -37,12 +36,31 @@ if __name__ == "__main__":
                     result[index - 1] += "\n"
         else:
             result[index] = word.capitalize()
+    return result
 
+
+def save_to_disk(filename, corrected_text):
+    logging.info("start saving to disk")
+    with codecs.open(filename, "w", encoding="utf-8") as f:
+        f.write(corrected_text)
+
+
+def join_text(result):
     text = u" ".join(result)
     if not text.endswith(u"."):
         text += u"."
+    return text
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--src", required=True, help="Stats dump file")
+    parser.add_argument("-d", "--dst", required=True, help="Output file for generated text")
+    args = parser.parse_args()
+    logging.basicConfig(format='%(asctime)s:%(message)s', level=logging.DEBUG)
+    storage = read_dump()
+    result = generate(storage)
+    text = join_text(result)
     corrected_text = re.sub(r"\s\.", r".", text, flags=re.UNICODE)
-    logging.info("start saving to disk")
-    with codecs.open(args.dst, "w", encoding="utf-8") as f:
-        f.write(corrected_text)
+    save_to_disk(args.dst, corrected_text)
     logging.info("finished")
