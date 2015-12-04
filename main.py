@@ -18,8 +18,8 @@ if __name__ == "__main__":
     storage = read(args.src)
     logging.info("stats loaded")
     logging.info("init system")
-    w1 = storage.get("1", "1")
-    w2 = storage.get("2", "2")
+    w1 = storage.get("_", "_")
+    w2 = storage.get("_", "_")
     w3 = storage.get(w1, w2)
     logging.info("start generating")
     result = []
